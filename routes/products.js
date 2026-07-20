@@ -45,7 +45,7 @@ router.post('/', async(req, res)=>{
         const result = await pool.query(
             'insert into products (category_id, name, description, price, stock) values ($1, $2, $3, $4, $5) returning *', [category_id, name, description, price, stock]
         );
-        res.status(201).json(result.rows);
+        res.status(201).json(result.rows[0]);
     } catch(err){
         console.error(err);
         res.status(500).json({Error: 'Database error'})
