@@ -5,6 +5,9 @@ console.log(listEndpoints(app));
 app.use(express.json());
 
 
+const loginRoute = require('./routes/login');
+app.use('/login', loginRoute);
+
 const orderRoutes = require('./routes/orders');
 app.use('/orders', orderRoutes);
 

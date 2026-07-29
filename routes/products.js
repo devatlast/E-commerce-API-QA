@@ -2,12 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-
+const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/admin');
 
 router.use(express.json());
 
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
     try{
         const result = await pool.query(
             'select p.name as product_name, p.price, p.description, c.name as category from products p inner join categories c on p.category_id = c.id'
@@ -20,7 +21,7 @@ router.get('/', async (req, res) => {
 });
 
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, isAdmin, async (req, res) => {
     const id = req.params.id;
     try{
         const result = await pool.query(
@@ -33,7 +34,7 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-router.post('/', async(req, res)=>{
+router.post('/', auth, isAdmin, async(req, res)=>{
     const{
         category_id,
         name, 
@@ -53,7 +54,7 @@ router.post('/', async(req, res)=>{
 });
 
 
-router.put('/:id', async(req, res)=>{
+router.put('/:id', auth, isAdmin, async(req, res)=>{
     const id = req.params.id;
     const{
         category_id,
@@ -78,7 +79,7 @@ router.put('/:id', async(req, res)=>{
     }
 });
 
-router.delete('/:id', async(req, res)=> {
+router.delete('/:id', auth, isAdmin,  async(req, res)=> {
     const id = req.params.id;
     try{
         const result = await pool.query(

@@ -2,8 +2,13 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
+const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/admin');
 
-router.get('/', async(req, res) => {
+
+
+
+router.get('/',auth, isAdmin,  async(req, res) => {
     try{
         const result = await pool.query(
             'select * from cart_items'
@@ -17,8 +22,8 @@ router.get('/', async(req, res) => {
     }
 });
 
-router.get('/:id', async (req, res) =>{
-    const id = req.params.id;
+router.get('/me', auth, async (req, res) =>{
+    const id = req.user.id;
     try{
         const result = await pool.query(
             `select u.first_name||' '||u.last_name as full_name, c.quantity,p.name as product_name, p.price from users u 
@@ -38,9 +43,9 @@ router.get('/:id', async (req, res) =>{
 });
 
 
-router.post('/', async(req, res) =>{
-    const {user_id,
-        product_id,
+router.post('/', auth, async(req, res) =>{
+    const user_id = req.user.id;
+    const { product_id,
         quantity
     } = req.body;
     try {
@@ -58,8 +63,9 @@ router.post('/', async(req, res) =>{
 });
 
 
-router.put('/:user_id/:product_id', async(req, res) => {
-    const { user_id, product_id } = req.params;
+router.put('/:product_id', auth,  async(req, res) => {
+    const user_id = req.user.id;
+    const { product_id } = req.params;
     const { quantity } = req.body;
     try{
         const result = await pool.query(
@@ -79,8 +85,9 @@ router.put('/:user_id/:product_id', async(req, res) => {
     }
 });
 
-router.delete('/:user_id/:product_id', async (req, res) => {
-    const { user_id, product_id } = req.params;
+router.delete('/:product_id', auth, async (req, res) => {
+    const user_id = req.user.id;
+    const {product_id } = req.params;
     try{
         const result = await pool.query(
             'delete from cart_items where user_id = $1 and product_id = $2 returning *', 

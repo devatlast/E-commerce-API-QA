@@ -2,13 +2,14 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const pool = require('../db');
-
+const auth = require('../middleware/auth');
+const isAdmin = require('../middleware/admin');
 
 router.use(express.json());
 
 
 
-router.get('/', async (req, res) => {
+router.get('/', auth, isAdmin, async (req, res) => {
     try{
         const result = await pool.query(
             'select * from users'
@@ -21,8 +22,8 @@ router.get('/', async (req, res) => {
 });
 
 
-router.get('/:id', async(req,res )=>{
-    const id = req.params.id;
+router.get('/me', auth,  async(req,res )=>{
+    const id = req.user.id;
     try{
         const result = await pool.query(
             `select first_name||' '||last_name as full_name, email, created_at from users where id = $1`,[id]
@@ -40,8 +41,8 @@ router.get('/:id', async(req,res )=>{
 });
 
 
-router.delete('/:id', async(req, res) => {
-    const id = req.params.id;
+router.delete('/me', auth,  async(req, res) => {
+    const id = req.user.id;
 
     try{
         const result = await pool.query(
@@ -67,7 +68,7 @@ router.delete('/:id', async(req, res) => {
 
 
 
-router.post('/', async(req, res) => {
+router.post('/', auth, async(req, res) => {
     const {
         first_name,
         last_name,
@@ -90,18 +91,20 @@ router.post('/', async(req, res) => {
 
 
 
-router.put('/:id', async(req, res) => {
+router.put('/:id', auth, isAdmin,  async(req, res) => {
     const id = req.params.id;
     const{
         first_name,
         last_name,
-        email
+        email, 
+        role,
+        password
     } = req.body;
 
     try{
         const result = await pool.query(
-            `update users set first_name = $1, last_name =$2, email = $3 where id = $4 RETURNING *`, 
-            [first_name, last_name, email, id]
+            `update users set first_name = $1, last_name =$2, email = $3, role = $4, password = $5 where id = $6 RETURNING *`, 
+            [first_name, last_name, email, role,password, id]
         );
         if(result.rows.length === 0){
             return res.status(404).json({
