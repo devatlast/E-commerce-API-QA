@@ -1,20 +1,24 @@
 #!/bin/bash
 
-echo "Running users tests"
+echo "--------Running users tests-------"
 ./users.sh
 sleep 5
 
-echo "Running cart tests"
+echo "-------Running cart tests-------"
 ./cart.sh
 sleep 5
 
-echo "Running products tests"
+echo "-------Running products tests------"
 ./products.sh
 sleep 5
 
-echo "Running orders tests"
+echo "------Running orders tests------"
 ./orders.sh
 sleep 5
+
+echo "-----Running categories tests-------"
+./category.sh 
+sleep 3
 
 
 echo "All tests completed"

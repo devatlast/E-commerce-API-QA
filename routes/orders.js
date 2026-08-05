@@ -49,7 +49,7 @@ router.get('/me', auth, async(req, res) => {
 
 
 
-router.get('/:id', auth, async(req, res) => {
+router.get('/:id', auth, isAdmin, async(req, res) => {
     const { id } = req.params;
     try{
         const result = await pool.query(

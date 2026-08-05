@@ -4,6 +4,8 @@ const listEndpoints = require('express-list-endpoints');
 console.log(listEndpoints(app));
 app.use(express.json());
 
+const categoryRoute = require('./routes/category');
+app.use('/category', categoryRoute);
 
 const loginRoute = require('./routes/login');
 app.use('/login', loginRoute);

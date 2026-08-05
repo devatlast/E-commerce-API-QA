@@ -68,17 +68,18 @@ router.delete('/me', auth,  async(req, res) => {
 
 
 
-router.post('/', auth, async(req, res) => {
+router.post('/', async(req, res) => {
     const {
         first_name,
         last_name,
-        email
+        email, 
+        password
     } = req.body;
 
     try{
         const result = await pool.query(
-            `insert into users (first_name, last_name, email) values($1, $2, $3) returning *`,
-            [first_name, last_name, email]
+            `insert into users (first_name, last_name, email, password) values($1, $2, $3, $4) returning *`,
+            [first_name, last_name, email, password]
         );
         res.status(201).json(result.rows[0]);
     } catch (err){
