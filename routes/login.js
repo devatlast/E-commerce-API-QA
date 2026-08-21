@@ -31,7 +31,10 @@ router.post('/', async (req, res) => {
         role: user.role
      }, 
 
-        process.env.JWT_SECRET
+        process.env.JWT_SECRET,
+        {
+            expiresIn: '30m'
+        }
 
     
 );

@@ -21,6 +21,34 @@ router.get('/', auth, isAdmin, async (req, res) => {
     }
 });
 
+router.put('/me', auth,  async(req, res) => {
+    const id = req.user.id;
+    const{
+        first_name,
+        last_name,
+        email, 
+        password
+    } = req.body;
+
+    try{
+        const result = await pool.query(
+            `update users set first_name = $1, last_name =$2, email = $3, password = $4 where id = $5 RETURNING *`, 
+            [first_name, last_name, email, password, id]
+        );
+        if(result.rows.length === 0){
+            return res.status(404).json({
+                message: 'User not found'
+            })
+        }
+        res.status(201).json(result.rows[0]);
+    } catch (err){
+        console.error(err);
+        res.status(500).json({
+            error: 'Database error'
+        });
+    }
+});
+
 
 router.get('/me', auth,  async(req,res )=>{
     const id = req.user.id;
@@ -55,7 +83,7 @@ router.delete('/me', auth,  async(req, res) => {
             });    
         }
          res.json({
-                message: 'User deleted'
+                message: 'Profile deleted'
             });    
     } catch (err){
         console.error(err);
@@ -65,7 +93,23 @@ router.delete('/me', auth,  async(req, res) => {
     }
 });
 
-
+router.delete('/:id', auth, isAdmin, async(req, res) => {
+    const id = req.params.id;
+    try{
+        const result = await pool.query(
+            ' delete from users where id = $1 returning *', [id]
+        );
+        if(result.rows.length === 0){
+            return res.status(404).json({
+                message: 'User not found'
+            });
+        }
+        res.json({ message: 'User deleted'});
+    } catch (err){
+        console.error(err);
+        res.status(500).json({error: 'Database error'})
+    }
+});
 
 
 router.post('/', async(req, res) => {

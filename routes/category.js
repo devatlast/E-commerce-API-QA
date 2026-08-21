@@ -8,7 +8,7 @@ const isAdmin = require('../middleware/admin');
 router.use(express.json());
 
 
-router.get('/', auth, isAdmin, async(req, res) => {
+router.get('/all', auth, isAdmin, async(req, res) => {
     try{
         const result = await pool.query(
             'select * from categories'
@@ -18,6 +18,20 @@ router.get('/', auth, isAdmin, async(req, res) => {
         console.error(err);
         res.status(500).json({
             message: 'Database error'
+        })
+    }
+});
+
+router.get('/me', auth, async (req, res) => {
+    try{
+        const result = await pool.query(
+            ' select name from categories'
+        );
+        res.json(result.rows);
+    }catch (err){
+        console.error(err);
+        res.status(500).json({
+            message: 'database error'
         })
     }
 });

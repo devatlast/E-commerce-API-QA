@@ -21,7 +21,19 @@ router.get('/', auth, async (req, res) => {
 });
 
 
-router.get('/:id', auth, isAdmin, async (req, res) => {
+router.get('/all', auth, isAdmin, async (req, res) => {
+    try{
+        const result = await pool.query(
+            'select * from products'
+        );
+        res.json(result.rows);
+    } catch (err){
+        console.error(err);
+        res.status(500).json({Error: 'Database error'})
+    }
+});
+
+router.get('/:id', auth, async (req, res) => {
     const id = req.params.id;
     try{
         const result = await pool.query(

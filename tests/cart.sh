@@ -27,16 +27,17 @@ fi
 
 sleep 2
 
-echo "Getting all carts - Admin "
-curl -X GET "$BASE_URL/cart" -H "Authorization: Bearer $ADMIN_TOKEN"
-sleep 2
-
 echo "Adding new item to user cart"
 curl -X POST "$BASE_URL/cart" -H "Authorization: Bearer $USER_TOKEN" -H "Content-Type:application/json" -d '{ "product_id":2, "quantity": 2}'
 sleep 2
 
 echo "Updating user cart items"
 curl -X PUT "$BASE_URL/cart/2" -H "Authorization: Bearer $USER_TOKEN" -H "Content-Type:application/json" -d '{"quantity": 4}'
+sleep 2
+
+
+echo "Getting all carts - Admin "
+curl -X GET "$BASE_URL/cart" -H "Authorization: Bearer $ADMIN_TOKEN"
 sleep 2
 
 echo "Getting cart items - User "

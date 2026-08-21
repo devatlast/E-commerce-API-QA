@@ -73,7 +73,7 @@ router.put('/:product_id', auth,  async(req, res) => {
             [quantity, user_id, product_id]
         );
         if(result.rows.length === 0){
-            return res.status(404).json({Message: 'Item not found in User cart'})
+            return res.status(404).json({Message: 'product not found in User cart'})
         }
         res.status(201).json(result.rows)
     } catch(err){
@@ -94,9 +94,9 @@ router.delete('/:product_id', auth, async (req, res) => {
             [ user_id, product_id]
         );
         if( result.rows.length === 0 ){
-            return res.status(404).json({ message: 'Item not found in user cart'})
+            return res.status(404).json({ message: 'Product not found in user cart'})
         }
-        res.status(200).json({message: `Item removed from user's cart`, Item: result.rows[0]})
+        res.status(200).json({message: `product removed from user's cart`, Item: result.rows[0]})
     } catch(err){
         console.error(err);
         res.status(500).json({ Error: 'Database error'})

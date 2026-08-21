@@ -15,7 +15,7 @@ fi
 sleep 2
 
 echo "logging in as user"
-USER_RESPONSE=$( curl -X POST $BASE_URL/login -H "Content-Type:application/json" -d '{"email":"akin@email.com", "password": "jay12won"}')
+USER_RESPONSE=$( curl -X POST $BASE_URL/login -H "Content-Type:application/json" -d '{"email":"tolu@email.com", "password": "tolu1st"}')
 USER_TOKEN=$(echo "$USER_RESPONSE" | jq -r '.token')
 echo "$USER_TOKEN"
 

@@ -1,0 +1,31 @@
+name: E_commerce_Api
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  run-api-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout project code
+        uses: actions/checkout@v4
+      - name: Set up Node js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Install dependencies
+        run: npm install express pg dotenv cors bcrypt jsonwebtoken
+      - name: Start server
+        run: node index.js &
+      - name: Wait for server to start
+        run: sleep 3
+      - name: Install Postman CLI
+        run: curl -s https://dl-cli.pstmn.io/install/linux64.sh | sh
+      - name: Login to Postman
+        run: postman login --with-api-key ${{ secrets.E_commerce_key }}
+      - name: Run E_commerce-backend
+        run: |
+         postman collection run "54348994-8aeef608-9464-4b4b-8386-c0a33f974f45" -e "54348994-e9fcb8d3-63b8-4a86-a767-3928aa06821d"
