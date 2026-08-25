@@ -28,4 +28,4 @@ jobs:
         run: postman login --with-api-key ${{ secrets.E_COMMERCE_KEY }}
       - name: Run E_commerce-backend
         run: |
-         postman collection run "54348994-8aeef608-9464-4b4b-8386-c0a33f974f45" -e "54348994-e9fcb8d3-63b8-4a86-a767-3928aa06821d"
+         postman collection run "54348994-8aeef608-9464-4b4b-8386-c0a33f974f45" -e "54348994-e9fcb8d3-63b8-4a86-a767-3928aa06821d" --delay-request 100
