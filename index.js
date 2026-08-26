@@ -23,6 +23,10 @@ const cartRoutes = require('./routes/cart');
 app.use('/cart', cartRoutes);
 
 
+app.get('/', (req, res) => {
+    res.send('E_commerce API is running')
+})
+
 app.listen(3000,() => {
     console.log('E-commerce server is running on port 3000');
 });
