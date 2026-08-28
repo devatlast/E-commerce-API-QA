@@ -10,14 +10,10 @@ jobs:
   run-api-tests:
     runs-on: ubuntu-latest
     steps:
-
-      - name: Install dependencies
-        run: npm install express pg dotenv cors bcrypt jsonwebtoken
-
       - name: Install Postman CLI
         run: curl -s https://dl-cli.pstmn.io/install/linux64.sh | sh
       - name: Login to Postman
         run: postman login --with-api-key ${{ secrets.E_COMMERCE_KEY }}
       - name: Run E_commerce-backend
         run: |
-         postman collection run "54348994-8aeef608-9464-4b4b-8386-c0a33f974f45" -e "54348994-e9fcb8d3-63b8-4a86-a767-3928aa06821d" --delay-request 100
+         postman collection run "54348994-8aeef608-9464-4b4b-8386-c0a33f974f45" -e "54348994-e9fcb8d3-63b8-4a86-a767-3928aa06821d" --env-var "Baseurl=https://e-commerce-api-qa.vercel.app" --delay-request 100
