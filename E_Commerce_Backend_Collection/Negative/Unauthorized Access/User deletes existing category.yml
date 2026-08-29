@@ -1,0 +1,38 @@
+info:
+  name: User deletes existing category
+  type: http
+  seq: 7
+
+http:
+  method: DELETE
+  url: "{{BaseUrl}}/category/1"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Bad response query\", () => {\r
+
+        \    const badResponse = [401, 403, 404, 500];\r
+
+        \    expect(badResponse).to.include(res.getStatus());\r
+
+        })\r
+
+        \r
+
+        test(\"user can't delete category\", ()=> {\r
+
+        \    expect(res.getBody().code).to.not.eql(200);\r
+
+        \    expect(res.getBody().message).to.eql(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

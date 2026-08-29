@@ -1,0 +1,43 @@
+info:
+  name: Update user
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{BaseUrl}}/users/3"
+  body:
+    type: json
+    data: "{\r
+
+      \        \"id\": 3,\r
+
+      \        \"first_name\": \"akin\",\r
+
+      \        \"last_name\": \"jide\",\r
+
+      \        \"email\": \"jide@email.com\",\r
+
+      \        \"role\": \"user\",\r
+
+      \        \"password\": \"akin134\"\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Status code is 201\", function () {\r
+
+        \    expect(res.getStatus()).to.equal(201);\r
+
+        });"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

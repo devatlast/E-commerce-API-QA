@@ -1,0 +1,32 @@
+info:
+  name: Missing token
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BaseUrl}}/users/me"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        test(\"Can't complete, missing token\", () => {\r
+
+        \    expect(json.message).to.eql(\"No token\");\r
+
+        })\r
+
+        test(\"Request failed\", () => {\r
+
+        \    expect(json.status).to.not.eql(200)\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -94,7 +94,7 @@ router.post('/', auth,async(req, res)=>{
         const orderId = order.rows[0].id;
         for(const item of cart.rows){
             await pool.query(
-            `insert into order_items(order_id, product_id, price) values($1, $2, $3)`, 
+            `insert into order_items(order_id, product_id, price) values($1, $2, $3) returning *`, 
             [orderId, item.product_id, item.price]);
         };
 

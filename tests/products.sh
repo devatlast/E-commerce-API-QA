@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_URL="http://localhost:3000"
+BASE_URL="https://e-commerce-api-qa.vercel.app"
 
 echo "logging in as Admin"
 ADMIN_RESPONSE=$(curl -X POST $BASE_URL/login -H "Content-Type: application/json" -d '{"email": "ola@email.com", "password":"admin1"}')
@@ -29,7 +29,7 @@ sleep 2
 
 
 
-echo "Getting all Products"
+echo "---USER views all available Products---"
 curl -X GET "$BASE_URL/products" -H "Authorization: Bearer $USER_TOKEN"
 sleep 2
 
@@ -46,3 +46,9 @@ sleep 2
 
 echo "Deleting product from table"
 curl -X DELETE "$BASE_URL/products/$PRODUCT_ID" -H "Authorization: Bearer $ADMIN_TOKEN"
+sleep 2
+
+echo "----ADMIN views all products---"
+curl -X GET "$BASE_URL/products/all" -H "Authorization: Bearer $ADMIN_TOKEN"
+sleep 2
+echo "---all products CRUD operations performed successfully---"

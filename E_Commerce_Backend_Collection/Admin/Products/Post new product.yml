@@ -1,0 +1,51 @@
+info:
+  name: Post new product
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/products"
+  body:
+    type: json
+    data: " {\r
+
+      \        \"category_id\": 1,\r
+
+      \        \"name\": \"3 way screen\",\r
+
+      \        \"description\": \"smart 3x 16inch screen for laptop and personal workspace\",\r
+
+      \        \"price\": 185.78,\r
+
+      \        \"stock\": 9\r
+
+      \ }"
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        if(json.id){\r
+
+        \tbru.setEnvVar(\"product_to_delete\", json.id)\r
+
+        }\r
+
+        \r
+
+        test(\"status code is 201\", () => {\r
+
+        \texpect(res.getStatus()).to.equal(201);\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

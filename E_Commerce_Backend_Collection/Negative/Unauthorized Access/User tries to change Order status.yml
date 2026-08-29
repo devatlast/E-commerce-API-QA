@@ -1,0 +1,41 @@
+info:
+  name: User tries to change Order status
+  type: http
+  seq: 14
+
+http:
+  method: PATCH
+  url: "{{BaseUrl}}/orders/2/status"
+  body:
+    type: json
+    data: "{\r
+
+      \    \"status\":\"delivered\"\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        test(\"Status code is not equal 200\", () => {\r
+
+        \    expect(json.status).to.not.equal(200);\r
+
+        })\r
+
+        test(\"Order status cannot be changed\", () => {\r
+
+        \    expect(json.message).to.equal(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

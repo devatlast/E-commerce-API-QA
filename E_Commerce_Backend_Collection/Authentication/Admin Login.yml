@@ -1,0 +1,51 @@
+info:
+  name: Admin Login
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/login"
+  body:
+    type: json
+    data: "{\r
+
+      \    \"email\": \"ola@email.com\",\r
+
+      \     \"password\":\"admin1\"\r
+
+      }"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        if(json.token){\r
+
+        \    bru.setEnvVar(\"Admin_Token\", json.token);\r
+
+        }\r
+
+        \r
+
+        test(\"Login was successful\", function(){\r
+
+        \    expect(res.getStatus()).to.equal(200);\r
+
+        });\r
+
+        \r
+
+        test(\"Token exists\", function (){\r
+
+        \    expect(json.token).to.exist;\r
+
+        });"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

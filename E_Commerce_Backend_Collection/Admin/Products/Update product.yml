@@ -1,0 +1,41 @@
+info:
+  name: Update product
+  type: http
+  seq: 3
+
+http:
+  method: PUT
+  url: "{{BaseUrl}}/products/{{product_to_delete}}"
+  body:
+    type: json
+    data: " {\r
+
+      \        \"category_id\": 1,\r
+
+      \        \"name\": \"Laptop extra screen\",\r
+
+      \        \"description\": \"smart 3x 16inch screen for laptop and personal workspace\",\r
+
+      \        \"price\": 185.78,\r
+
+      \        \"stock\": 9\r
+
+      \ }"
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Status code is 201\", () => {\r
+
+        \    expect(res.getStatus()).to.equal(201);\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

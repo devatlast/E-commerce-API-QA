@@ -1,0 +1,35 @@
+info:
+  name: Login with details
+  type: http
+  seq: 2
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/login"
+  body:
+    type: json
+    data: "{\r
+
+      \    \"email\": \"lalonpe@email.com\",\r
+
+      \     \"password\":\"lalonbaby11\"\r
+
+      }"
+  auth: inherit
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        if(json.token){\r
+
+        \    bru.setEnvVar(\"user_to_delete\", json.token)\r
+
+        }"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,40 @@
+info:
+  name: Get all orders
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BaseUrl}}/orders"
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Orders have all features\", () => {\r
+
+        \    const orders = res.getBody();\r
+
+        \    orders.forEach(o => {\r
+
+        \        expect(o).to.have.property(\"id\");\r
+
+        \        expect(o).to.have.property(\"user_id\");\r
+
+        \        expect(o).to.have.property(\"total\");\r
+
+        \        expect(o).to.have.property(\"status\");\r
+
+        \        expect(o).to.have.property(\"created_at\");\r
+
+        \    });\r
+
+        });"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

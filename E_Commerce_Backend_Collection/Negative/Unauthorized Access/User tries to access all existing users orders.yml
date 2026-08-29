@@ -1,0 +1,38 @@
+info:
+  name: User tries to access all existing users orders
+  type: http
+  seq: 12
+
+http:
+  method: GET
+  url: "{{BaseUrl}}/orders/all"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"bad response request\", () => {\r
+
+        \    const badResponse = [401, 403, 404, 500];\r
+
+        \    expect(badResponse).to.include(res.getStatus());\r
+
+        })\r
+
+        \r
+
+        test(\"Cannot access all existing users orders\", ()=> {\r
+
+        \    expect(res.getBody().code).to.not.eql(200)\r
+
+        \    expect(res.getBody().message).to.eql(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

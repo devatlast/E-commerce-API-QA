@@ -1,6 +1,6 @@
 #!/bin/bash
 
-BASE_URL="http://localhost:3000"
+BASE_URL="https://e-commerce-api-qa.vercel.app"
 
 
 echo "Logging in as Admin"
@@ -26,27 +26,28 @@ fi
 
 sleep 2
 
+echo "----USER creates new order----"
+sleep 1
+echo "--adding product to user cart--"
+curl -X POST "$BASE_URL/cart" -H "Authorization: Bearer $USER_TOKEN" -H "Content-Type:application/json" -d '{ "product_id":2, "quantity": 2}'
+sleep 1
+echo "--creating user order-"
+RESPONSE=$(curl  -X POST "$BASE_URL/orders" -H "Authorization: Bearer $USER_TOKEN" )
+echo "$RESPONSE"
+ORDER_ID=$(echo "$RESPONSE" | jq -r '.id')
+echo "User orderID is: $ORDER_ID"
+sleep 2
 
-
-echo "Getting all orders - Admin "
+echo "--ADMIN views all orders--"
 curl "$BASE_URL/orders" -H "Authorization: Bearer $ADMIN_TOKEN"
 sleep 2
 
-echo "Getting orders - User "
+echo "--USER views order--"
 curl "$BASE_URL/orders/me" -H "Authorization: Bearer $USER_TOKEN"
 sleep 2
 
 echo "Getting orders by Id - Admin "
-NEW_ORDER=$( curl -X GET "$BASE_URL/orders/2" -H "Authorization: Bearer $ADMIN_TOKEN")
-echo "$NEW_ORDER"
-sleep 2
-
-echo "Creating User orders"
-curl -X POST "$BASE_URL/cart" -H "Authorization: Bearer $USER_TOKEN" -H "Content-Type:application/json" -d '{ "product_id":2, "quantity": 2}'
-sleep 1
-RESPONSE=$(curl  -X POST "$BASE_URL/orders" -H "Authorization: Bearer $USER_TOKEN" -H "Content-Type: application/json" -d '{"user_id":2}')
-echo "$RESPONSE"
-ORDER_ID=$(echo "$RESPONSE" | jq -r '.order.id')
+curl -X GET "$BASE_URL/orders/$ORDER_ID" -H "Authorization: Bearer $ADMIN_TOKEN"
 sleep 2
 
 echo "Updating user order status"

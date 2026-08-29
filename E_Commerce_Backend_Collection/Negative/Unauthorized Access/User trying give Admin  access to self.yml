@@ -1,0 +1,51 @@
+info:
+  name: User trying give Admin  access to self
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{BaseUrl}}/users/2"
+  body:
+    type: json
+    data: "{\r
+
+      \   \"first_name\": \"tolu\",\r
+
+      \    \"last_name\": \"lope\",\r
+
+      \    \"email\": \"tolu@email.com\",\r
+
+      \    \"role\": \"admin\",\r
+
+      \    \"password\": \"tolu1st\"\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        \r
+
+        test(\"Status code is 401\", function () {\r
+
+        \    expect(res.getStatus()).to.equal(401);\r
+
+        });\r
+
+        test(\"request unauthorized\", ()=> {\r
+
+        \    expect(json.message).to.eql(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

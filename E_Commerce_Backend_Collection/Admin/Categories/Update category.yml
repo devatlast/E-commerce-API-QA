@@ -1,0 +1,41 @@
+info:
+  name: Update category
+  type: http
+  seq: 3
+
+http:
+  method: PATCH
+  url: "{{BaseUrl}}/category/{{category_to_work_with}}"
+  body:
+    type: json
+    data: "{\r
+
+      \    \"name\": \"Men's Fashion\"\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Response should be below 800ms\", () => {\r
+
+        \    expect(res.getResponseTime()).to.be.below(800)\r
+
+        })\r
+
+        \r
+
+        test(\"Status code to be 201\", () => {\r
+
+        \    expect(res.getStatus()).to.eql(201)\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

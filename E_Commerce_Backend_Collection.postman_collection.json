@@ -1,0 +1,2406 @@
+{
+  "info": {
+    "_postman_id": "8aeef608-9464-4b4b-8386-c0a33f974f45",
+    "name": "E_Commerce_Backend_Collection",
+    "description": "## E-Commerce Backend API Collection\n\nThis collection covers the full backend API surface of an e-commerce platform, organized by role and domain. It is designed to support both development and testing workflows, with requests grouped into four top-level sections:\n\n### Authentication\n\nHandles login for both **Admin** and **User** roles, providing the tokens required to authorize requests across the rest of the collection.\n\n### Admin\n\nProtected endpoints accessible only to administrators, covering:\n\n- **User Management** – retrieve and update registered users\n    \n- **Categories** – create, list, update, and remove product categories\n    \n- **Products** – full CRUD operations on the product catalog\n    \n- **Orders** – view, update status, and delete orders across all users\n    \n- **Cart** – inspect and manage all active shopping carts\n    \n\n### User\n\nAuthenticated endpoints for regular users, covering:\n\n- **Profile** – account creation, login, viewing profile details, and account deletion\n    \n- **Product** – browse available products\n    \n- **Cart** – add, update, retrieve, and remove items from a personal cart\n    \n- **Orders** – place new orders and view existing ones\n    \n\n### Negative\n\nDedicated test scenarios that validate the API's security and error-handling behaviour:\n\n- **Unauthorized Access** – confirms that user-role tokens are correctly blocked from admin-only endpoints (user management, categories, products, orders, and carts)\n    \n- **Bad Requests** – tests for missing and expired authentication tokens\n    \n\n---\n\n### Collection-level Automation\n\nA collection-level after-response script runs automatically on every request. It logs a warning to the console for any error status code (400, 401, 403, 404, 500, 502, 503) and asserts status, response time (< 800 ms), and non-empty JSON body for all 200 OK responses.\n\n---",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "54348994",
+    "_collection_link": "https://go.postman.co/collection/54348994-8aeef608-9464-4b4b-8386-c0a33f974f45?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Admin Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();\r\nif(json.token){\r\n    pm.environment.set(\"Admin_Token\", json.token);\r\n}\r\n\r\npm.test(\"Login was successful\", function(){\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\npm.test(\"Token exists\", function (){\r\n    pm.expect(json.token).to.exist;\r\n});\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"ola@email.com\",\r\n     \"password\":\"admin1\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}/login",
+              "host": [
+                "{{BaseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "const json = pm.response.json();\r",
+                  "if(json.token){\r",
+                  "    pm.environment.set(\"User_Token\", json.token);\r",
+                  "}\r",
+                  "\r",
+                  "pm.test(\"Login was successful\", function(){\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "pm.test(\"Token exists\", function (){\r",
+                  "    pm.expect(json.token).to.exist;\r",
+                  "});\r",
+                  ""
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"email\": \"tolu@email.com\",\r\n     \"password\":\"tolu1st\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BaseUrl}}/login",
+              "host": [
+                "{{BaseUrl}}"
+              ],
+              "path": [
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin",
+      "item": [
+        {
+          "name": "User",
+          "item": [
+            {
+              "name": "Get All Users",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test( \"All users are returned\", function () {\r",
+                      "    const json = pm.response.json();\r",
+                      "    pm.expect(json).to.be.an(\"array\");\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Users have all features\", () => {\r",
+                      "    const users = pm.response.json();\r",
+                      "    users.forEach(u => {\r",
+                      "        pm.expect(u).to.have.property(\"id\");\r",
+                      "        pm.expect(u).to.have.property(\"first_name\");\r",
+                      "        pm.expect(u).to.have.property(\"last_name\");\r",
+                      "        pm.expect(u).to.have.property(\"email\");\r",
+                      "        pm.expect(u).to.have.property(\"created_at\");\r",
+                      "        pm.expect(u).to.have.property(\"role\");\r",
+                      "        pm.expect(u).to.have.property(\"password\");\r",
+                      "    });\r",
+                      "});"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/users",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "200 OK",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BaseUrl}}/users",
+                      "host": [
+                        "{{BaseUrl}}"
+                      ],
+                      "path": [
+                        "users"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json",
+                      "description": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "750"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"2ee-2upTPDG7hjzCPW4WL1IFUbjGuxQ\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 10 Aug 2026 07:34:49 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "[\n    {\n        \"id\": 3,\n        \"first_name\": \"akin\",\n        \"last_name\": \"jide\",\n        \"email\": \"akin@email.com\",\n        \"created_at\": \"2026-07-15T10:54:51.336Z\",\n        \"role\": \"user\",\n        \"password\": \"jay12won\"\n    },\n    {\n        \"id\": 1,\n        \"first_name\": \"ola\",\n        \"last_name\": \"wale\",\n        \"email\": \"ola@email.com\",\n        \"created_at\": \"2026-07-15T10:54:51.336Z\",\n        \"role\": \"admin\",\n        \"password\": \"admin1\"\n    },\n    {\n        \"id\": 2,\n        \"first_name\": \"tolu\",\n        \"last_name\": \"lope\",\n        \"email\": \"tolu@email.com\",\n        \"created_at\": \"2026-07-15T10:54:51.336Z\",\n        \"role\": \"user\",\n        \"password\": \"tolu1st\"\n    },\n    {\n        \"id\": 17,\n        \"first_name\": \"itunu\",\n        \"last_name\": \"baby\",\n        \"email\": \"updateditunu@email.com\",\n        \"created_at\": \"2026-07-31T06:37:43.634Z\",\n        \"role\": null,\n        \"password\": \"Ilorin1\"\n    },\n    {\n        \"id\": 18,\n        \"first_name\": \"itunu\",\n        \"last_name\": \"jesus\",\n        \"email\": \"inu@email.com\",\n        \"created_at\": \"2026-07-31T06:39:30.017Z\",\n        \"role\": \"user\",\n        \"password\": \"ilori11\"\n    }\n]"
+                }
+              ]
+            },
+            {
+              "name": "Update user",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", function () {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "});\r",
+                      "\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n        \"id\": 3,\r\n        \"first_name\": \"akin\",\r\n        \"last_name\": \"jide\",\r\n        \"email\": \"jide@email.com\",\r\n        \"role\": \"user\",\r\n        \"password\": \"akin134\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/users/3",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "3"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Categories",
+          "item": [
+            {
+              "name": "Create new category",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const json = pm.response.json();\r",
+                      "if(json.id){\r",
+                      "\tpm.environment.set(\"category_to_work_with\", json.id)\r",
+                      "}\r",
+                      "\r",
+                      "pm.test(\"status code is 201\", () => {\r",
+                      "\tpm.response.to.have.status(201);\r",
+                      "})\r",
+                      "\r",
+                      "pm.test(\"Response should be under 800ms\", () => {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800);\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"Men's clothing\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/category",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get all categories",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const categories = pm.response.json();\r",
+                      "pm.test(\"all categories have equal features\", () => {\r",
+                      "    categories.forEach(category => {\r",
+                      "        pm.expect(category).to.have.property(\"id\");\r",
+                      "        pm.expect(category).to.have.property(\"name\");\r",
+                      "    })\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/category/all",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category",
+                    "all"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update category",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Response should be below 800ms\", () => {\r",
+                      "    pm.expect(pm.response.responseTime).to.be.below(800)\r",
+                      "})\r",
+                      "\r",
+                      "pm.test(\"Status code to be 201\", () => {\r",
+                      "    pm.expect(pm.response.code).to.eql(201)\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"Men's Fashion\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/category/{{category_to_work_with}}",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category",
+                    "{{category_to_work_with}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Remove category",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/category/{{category_to_work_with}}",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category",
+                    "{{category_to_work_with}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Products",
+          "item": [
+            {
+              "name": "Get all products",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Response has all features\", ()=>{\r",
+                      "    const products = pm.response.json();\r",
+                      "    products.forEach(p =>{\r",
+                      "        pm.expect(p).to.have.property(\"id\");\r",
+                      "        pm.expect(p).to.have.property(\"category_id\");\r",
+                      "        pm.expect(p).to.have.property(\"description\");\r",
+                      "        pm.expect(p).to.have.property(\"name\");\r",
+                      "        pm.expect(p).to.have.property(\"price\");\r",
+                      "        pm.expect(p).to.have.property(\"stock\");\r",
+                      "    } )\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/products/all",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "all"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Post new product",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const json = pm.response.json();\r",
+                      "if(json.id){\r",
+                      "\tpm.environment.set(\"product_to_delete\", json.id)\r",
+                      "}\r",
+                      "\r",
+                      "pm.test(\"status code is 201\", () => {\r",
+                      "\tpm.response.to.have.status(201);\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": " {\r\n        \"category_id\": 1,\r\n        \"name\": \"3 way screen\",\r\n        \"description\": \"smart 3x 16inch screen for laptop and personal workspace\",\r\n        \"price\": 185.78,\r\n        \"stock\": 9\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/products",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update product",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 201\", () => {\r",
+                      "    pm.response.to.have.status(201);\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": " {\r\n        \"category_id\": 1,\r\n        \"name\": \"Laptop extra screen\",\r\n        \"description\": \"smart 3x 16inch screen for laptop and personal workspace\",\r\n        \"price\": 185.78,\r\n        \"stock\": 9\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/products/{{product_to_delete}}",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "{{product_to_delete}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get by Id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/products/{{product_to_delete}}",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "{{product_to_delete}}"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "delete product",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/products/{{product_to_delete}}",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "{{product_to_delete}}"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Orders",
+          "item": [
+            {
+              "name": "Get all orders",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Orders have all features\", () => {\r",
+                      "    const orders = pm.response.json();\r",
+                      "    orders.forEach(o => {\r",
+                      "        pm.expect(o).to.have.property(\"id\");\r",
+                      "        pm.expect(o).to.have.property(\"user_id\");\r",
+                      "        pm.expect(o).to.have.property(\"total\");\r",
+                      "        pm.expect(o).to.have.property(\"status\");\r",
+                      "        pm.expect(o).to.have.property(\"created_at\");\r",
+                      "    });\r",
+                      "});\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/orders",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get order by Id",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Status code is 200\", ()=>{\r",
+                      "    const badResponse = [404, 500, 401];\r",
+                      "    const responseCode = pm.response.code;\r",
+                      "    pm.expect(responseCode).to.not.be.oneOf(badResponse)\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/orders/8",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "8"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update order status",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"status\":\"pending\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/orders/7/status",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "7",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Order not found\", ()=>{",
+                      "\tconst order = pm.request.url.path[pm.request.url.path.length - 1];",
+                      "    const badResponse = [404, 500, 401];",
+                      "    const responseCode = pm.response.code;",
+                      "\t\tif(order === null){",
+                      "\t\t\tpm.expect(responseCode).to.be.oneOf(badResponse);",
+                      "\t\t}",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/orders/6",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "6"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cart",
+          "item": [
+            {
+              "name": "Add product to cart Copy",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\r\nconst json = pm.response.json();\r\nif(json.id){\r\n\tpm.environment.set(\"cart_id\", json.id);\r\n}\r\n\r\n\r\npm.test(\"Response time is less than 800ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(800);\r\n});\r\n\r\npm.test(\"Successful POST request\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"product_id\":4,\r\n    \"quantity\":2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/cart",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "cart"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get all carts",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Response is not empty\", () => {\r",
+                      "    const response = pm.response.json();\r",
+                      "    pm.expect(response).to.not.be.empty;\r",
+                      "})\r",
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/cart",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "cart"
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "Get all carts",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BaseUrl}}/cart",
+                      "host": [
+                        "{{BaseUrl}}"
+                      ],
+                      "path": [
+                        "cart"
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json",
+                      "description": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "2"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"2-l9Fw4VUO7kr8CvBlt4zaMCqXZ0w\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 10 Aug 2026 08:23:04 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [
+                    {
+                      "expires": "Invalid Date",
+                      "domain": "",
+                      "path": ""
+                    }
+                  ],
+                  "body": "[]"
+                },
+                {
+                  "name": "Unauthorized",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "{{BaseUrl}}/cart",
+                      "host": [
+                        "{{BaseUrl}}"
+                      ],
+                      "path": [
+                        "cart"
+                      ]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json",
+                      "description": "",
+                      "type": "text"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "22"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"16-gcuJU5q8hXOgf6e20xwF/jTYPwI\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Mon, 10 Aug 2026 08:24:25 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": \"No token\"\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Public",
+      "item": [
+        {
+          "name": "Products",
+          "item": []
+        }
+      ]
+    },
+    {
+      "name": "User",
+      "item": [
+        {
+          "name": "Profile",
+          "item": [
+            {
+              "name": "Create new account",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"user created successfully\", () => {\r",
+                      "    pm.expect(pm.response.json().id).to.be.a('number')\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"first_name\": \"micheal\",\r\n    \"last_name\": \"lalonpe\",\r\n    \"email\": \"lalonpe@email.com\",\r\n    \"password\": \"lalonbaby11\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/users",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Login with details",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "const json = pm.response.json();\r",
+                      "if(json.token){\r",
+                      "    pm.environment.set(\"user_to_delete\", json.token)\r",
+                      "}"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"lalonpe@email.com\",\r\n     \"password\":\"lalonbaby11\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/login",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get profile details",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"password is not visible\", () => {\r",
+                      "    const json = pm.response.json();\r",
+                      "    pm.expect(json.password).to.be.undefined;\r",
+                      "});\r",
+                      "pm.test(\"Response has necessary features\", () => {\r",
+                      "    const json = pm.response.json();\r",
+                      "    pm.expect(json.full_name).to.not.be.undefined;\r",
+                      "    pm.expect(json.email).to.not.be.undefined;\r",
+                      "    pm.expect(json.created_at).to.not.be.undefined;\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_to_delete}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/users/me",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete Profile",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Profile deleted successfully\", () => {\r\n\tpm.expect(pm.response.code).to.eql(200) \r\n})\r\npm.test(\"Got a response message\", () => {\r\n    let jsonData = pm.response.json();\r\n    pm.expect(jsonData.message).to.eql(\"Profile deleted\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{user_to_delete}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "text"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/users/me",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Product",
+          "item": [
+            {
+              "name": "Get available products",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"product Id is not visible\", () => {\r",
+                      "    const json = pm.response.json();\r",
+                      "    json.forEach((product) => {\r",
+                      "        pm.expect(product).to.not.have.property(\"id\");\r",
+                      "        pm.expect(product).to.not.have.property(\"category_id\")\r",
+                      "    })\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/products",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Cart",
+          "item": [
+            {
+              "name": "Add product to cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "\r\nconst json = pm.response.json();\r\nif(json.id){\r\n\tpm.environment.set(\"cart_id\", json.id);\r\n}\r\n\r\n\r\npm.test(\"Response time is less than 800ms\", function () {\r\n    pm.expect(pm.response.responseTime).to.be.below(800);\r\n});\r\n\r\npm.test(\"Successful POST request\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"product_id\":4,\r\n    \"quantity\":2\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/cart",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "cart"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Update cart products",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Cart is updated\", function () {\r\n    pm.response.to.have.status(201);\r\n});\r\n\r\n"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n\t\"quantity\": 6\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/cart/4",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "cart",
+                    "4"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Get products in cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Cart items should be returned\", () => {\r",
+                      "    pm.expect(pm.response.json().length).to.be.above(0);\r",
+                      "});\r",
+                      "\r",
+                      "pm.test(\"Response does not have exposed features\", () => {\r",
+                      "    const cart = pm.response.json();\r",
+                      "    cart.forEach(c => {\r",
+                      "        pm.expect(c).to.not.have.property('id');\r",
+                      "        pm.expect(c).to.not.have.property('created_at');\r",
+                      "        pm.expect(c).to.have.property(\"full_name\");\r",
+                      "        pm.expect(c).to.have.property(\"quantity\");\r",
+                      "        pm.expect(c).to.have.property(\"product_name\");\r",
+                      "        pm.expect(c).to.have.property(\"price\");\r",
+                      "    })\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": ""
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/cart/me",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "cart",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Delete product from cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Product unavailable in cart\", () => {\r\n    pm.expect(pm.response.json().message).to.eql(\"Product not found in user cart\")\r\n})\r\npm.test(\"Product removed from cart\", () =>{\r\n    const goodResponse = 200;\r\n    const badResponse = [404, 500, 403];\r\n    const json = pm.response.json();\r\n    if(json.statusCode === goodResponse){\r\n   pm.expect(json.statusCode).to.not.be.oneOf(badResponse);\r\n    }\r\n});"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/cart/4",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "cart",
+                    "4"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Orders",
+          "item": [
+            {
+              "name": "Post new order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Status is 201\", () => {\r\n    pm.response.to.have.status(201);\r\n})\r\nconst json = pm.response.json();\r\npm.test(\"Order created successfully\", ()=> {\r\n    pm.expect(json.message).to.eql(\"Order created successfully\");\r\n    json.forEach(o => {\r\n        pm.expect(o.id).to.be.a('number');\r\n        pm.expect(0).to.have.property(\"user_id\");\r\n        pm.expect(o).to.have.property(\"status\");\r\n        pm.expect(o).to.have.property(\"created_at\");\r\n        pm.expect(o).to.have.property(\"total\");\r\n    })\r\n})\r\n\r\npm.test(\"Cart is empty\", () => {\r\n    pm.expect(json.Message).to.eql(\"Cart is empty\")\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/orders",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "View order",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "pm.test(\"Order exist\", () => {\r",
+                      "    const json = pm.response.json();\r",
+                      "    pm.expect(json.length).to.be.above(0);\r",
+                      "    json.forEach(o => {\r",
+                      "        pm.expect(o).to.have.property(\"total\");\r",
+                      "        pm.expect(o).to.have.property(\"status\");\r",
+                      "    })\r",
+                      "})"
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/orders/me",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Negative",
+      "item": [
+        {
+          "name": "Unauthorized Access",
+          "item": [
+            {
+              "name": "Unauthorized user trying to access users table",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();\r\n\r\npm.test(\"Unauthorized request\", () => {\r\n    pm.expect(json.message).to.eql(\"Admin access required\");\r\n    pm.expect(pm.response.code).to.eql(401);\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/users",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User trying give Admin  access to self",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();\r\n\r\npm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});\r\npm.test(\"request unauthorized\", ()=> {\r\n    pm.expect(json.message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n   \"first_name\": \"tolu\",\r\n    \"last_name\": \"lope\",\r\n    \"email\": \"tolu@email.com\",\r\n    \"role\": \"admin\",\r\n    \"password\": \"tolu1st\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/users/2",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User deleting another user from table",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Delete request is denied\", ()=>{\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n    pm.expect(pm.response.code).to.eql(401); \r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/users/4",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "4"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User trying to get Admin side categories",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"request is not successful\", () => {\r\n    pm.expect(pm.response.code).to.not.equal(200);\r\n   \r\n})\r\npm.test(\"bad response code\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/category/all",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category",
+                    "all"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User adding new category",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"bad response code\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"can't post new category\", ()=> {\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"furnitures\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/category",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User patch existing category",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"bad response code\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"Cannot patch existing category\", ()=> {\r\n    pm.expect(pm.response.json().code).to.not.eql(200);\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n        \"name\": \"Updated Electronics\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/category/1",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User deletes existing category",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Bad response query\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"user can't delete category\", ()=> {\r\n    pm.expect(pm.response.json().code).to.not.eql(200);\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/category/1",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "category",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User tries to get admin side products",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"bad response request\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"Cannot get admin side products\", ()=> {\r\n    pm.expect(pm.response.json().code).to.not.eql(200)\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/products/all",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "all"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User tries to launch new product",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"bad response request\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"Cannot post new products\", ()=> {\r\n    pm.expect(pm.response.json().code).to.not.eql(201)\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "    {    \r\n        \"category_id\": 4,\r\n        \"name\": \"queen premier\",\r\n        \"description\": \"A kids learning book\",\r\n        \"price\": \"14.98\",\r\n        \"stock\": 1\r\n    }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/products",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "user deletes products from list",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"Got a bad response\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"Cannot delete product\", ()=> {\r\n    pm.expect(pm.response.json().code).to.not.eql(200)\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/products/1",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User tries to make changes to existing product",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"bad response request\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"Cannot edit existing products\", ()=> {\r\n    pm.expect(pm.response.json().code).to.not.eql(200)\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n     \"category_id\": 1,\r\n        \"name\": \"speaker\",\r\n        \"description\": \"bluetooth speaker for homes\",\r\n        \"price\": 200,\r\n        \"stock\": 5\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/products/1",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "products",
+                    "1"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User tries to access all existing users orders",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "pm.test(\"bad response request\", () => {\r\n    const badResponse = [401, 403, 404, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code);\r\n})\r\n\r\npm.test(\"Cannot access all existing users orders\", ()=> {\r\n    pm.expect(pm.response.json().code).to.not.eql(200)\r\n    pm.expect(pm.response.json().message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/orders/all",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "all"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User tries to get all cart",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();\r\n\r\npm.test(\"Request is not unauthorized\", () => {\r\n    pm.expect(json.status).to.not.eql(200);\r\n})\r\n\r\npm.test(\"Admin access required\", () => {\r\n    pm.expect(json.message).to.eql(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/cart",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "cart"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User tries to change Order status",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();\r\npm.test(\"Status code is not equal 200\", () => {\r\n    pm.expect(json.status).to.not.equal(200);\r\n})\r\npm.test(\"Order status cannot be changed\", () => {\r\n    pm.expect(json.message).to.equal(\"Admin access required\");\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PATCH",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"status\":\"delivered\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/orders/2/status",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "2",
+                    "status"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "User tries deleting orders",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();\r\n\r\npm.test(\"Order can't be removed by non-admin\", () => {\r\n    pm.expect(json.message).to.eql(\"Admin access required\")\r\n})\r\npm.test(\"this is a bad request\", () => {\r\n    const badResponse = [404, 402, 401, 500];\r\n    pm.expect(badResponse).to.include(pm.response.code)\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{User_Token}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/orders/2",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "orders",
+                    "2"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "Bad requests",
+          "item": [
+            {
+              "name": "Missing token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();\r\npm.test(\"Can't complete, missing token\", () => {\r\n    pm.expect(json.message).to.eql(\"No token\");\r\n})\r\npm.test(\"Request failed\", () => {\r\n    pm.expect(json.status).to.not.eql(200)\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{BaseUrl}}/users/me",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "Expired token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "const json = pm.response.json();\r\npm.test(\"Expired token\", () => {\r\n    pm.expect(json.message).to.eql(\"Invalid token\")\r\n})\r\npm.test(\"Response is forbidden\", () => {\r\n    pm.response.to.have.status(403)\r\n})"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{Admin_Token}}{",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{BaseUrl}}/users",
+                  "host": [
+                    "{{BaseUrl}}"
+                  ],
+                  "path": [
+                    "users"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "test",
+      "script": {
+        "exec": [
+          "const statusCode = pm.response.code;",
+          "const errorCodes = [400, 401, 403, 404, 500, 502, 503];",
+          "",
+          "// 1. Console Warn on Errors",
+          "if (errorCodes.includes(statusCode)) {",
+          "    console.warn('[ALERT] Bad Result Code: ' + statusCode);",
+          "}",
+          "",
+          "// 2. Success Tests",
+          "if (statusCode === 200 || statusCode === 201) {",
+          "    pm.test('Status is 200 OK', () => { pm.response.to.have.status(200); });",
+          "    pm.test('Response time under 1000ms', () => { pm.expect(pm.response.responseTime).to.be.below(1000); });",
+          "    pm.test('JSON is not empty', () => {",
+          "        const data = pm.response.json();",
+          "        pm.expect(Object.keys(data).length).to.be.above(0);",
+          "    });",
+          "}"
+        ],
+        "type": "text/javascript"
+      }
+    }
+  ]
+}

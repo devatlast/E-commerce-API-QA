@@ -1,0 +1,53 @@
+info:
+  name: User tries to launch new product
+  type: http
+  seq: 9
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/products"
+  body:
+    type: json
+    data: "    {    \r
+
+      \        \"category_id\": 4,\r
+
+      \        \"name\": \"queen premier\",\r
+
+      \        \"description\": \"A kids learning book\",\r
+
+      \        \"price\": \"14.98\",\r
+
+      \        \"stock\": 1\r
+
+      \    }"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"bad response request\", () => {\r
+
+        \    const badResponse = [401, 403, 404, 500];\r
+
+        \    expect(badResponse).to.include(res.getStatus());\r
+
+        })\r
+
+        \r
+
+        test(\"Cannot post new products\", ()=> {\r
+
+        \    expect(res.getBody().code).to.not.eql(201)\r
+
+        \    expect(res.getBody().message).to.eql(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

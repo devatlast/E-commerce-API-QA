@@ -1,0 +1,56 @@
+info:
+  name: Post new order
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/orders"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Status is 201\", () => {\r
+
+        \    expect(res.getStatus()).to.equal(201);\r
+
+        })\r
+
+        const json = res.getBody();\r
+
+        test(\"Order created successfully\", ()=> {\r
+
+        \    expect(json.message).to.eql(\"Order created successfully\");\r
+
+        \    json.forEach(o => {\r
+
+        \        expect(o.id).to.be.a('number');\r
+
+        \        expect(0).to.have.property(\"user_id\");\r
+
+        \        expect(o).to.have.property(\"status\");\r
+
+        \        expect(o).to.have.property(\"created_at\");\r
+
+        \        expect(o).to.have.property(\"total\");\r
+
+        \    })\r
+
+        })\r
+
+        \r
+
+        test(\"Cart is empty\", () => {\r
+
+        \    expect(json.Message).to.eql(\"Cart is empty\")\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,4 @@
+name: e_commerce_env
+variables:
+  - name: BaseUrl
+    value: https://e-commerce-api-qa.vercel.app

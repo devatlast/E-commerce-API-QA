@@ -1,0 +1,36 @@
+info:
+  name: Delete order
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{BaseUrl}}/orders/6"
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Order not found\", ()=>{\r
+
+        \tconst order = req.getUrl().path[req.getUrl().path.length - 1];\r
+
+        \    const badResponse = [404, 500, 401];\r
+
+        \    const responseCode = res.getStatus();\r
+
+        \t\tif(order === null){\r
+
+        \t\t\texpect(responseCode).to.be.oneOf(badResponse);\r
+
+        \t\t}\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

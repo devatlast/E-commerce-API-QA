@@ -1,0 +1,7 @@
+info:
+  name: Bad requests
+  type: folder
+  seq: 2
+
+request:
+  auth: inherit

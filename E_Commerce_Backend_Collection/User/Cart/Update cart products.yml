@@ -1,0 +1,29 @@
+info:
+  name: Update cart products
+  type: http
+  seq: 2
+
+http:
+  method: PUT
+  url: "{{BaseUrl}}/cart/4"
+  body:
+    type: json
+    data: "{\r\n\t\"quantity\": 6\r\n}"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Cart is updated\", function () {\r
+
+        \    expect(res.getStatus()).to.equal(201);\r
+
+        });"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

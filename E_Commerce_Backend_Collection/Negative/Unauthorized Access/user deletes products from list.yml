@@ -1,0 +1,38 @@
+info:
+  name: user deletes products from list
+  type: http
+  seq: 10
+
+http:
+  method: DELETE
+  url: "{{BaseUrl}}/products/1"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Got a bad response\", () => {\r
+
+        \    const badResponse = [401, 403, 404, 500];\r
+
+        \    expect(badResponse).to.include(res.getStatus());\r
+
+        })\r
+
+        \r
+
+        test(\"Cannot delete product\", ()=> {\r
+
+        \    expect(res.getBody().code).to.not.eql(200)\r
+
+        \    expect(res.getBody().message).to.eql(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

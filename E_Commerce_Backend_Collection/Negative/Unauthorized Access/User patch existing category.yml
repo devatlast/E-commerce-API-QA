@@ -1,0 +1,45 @@
+info:
+  name: User patch existing category
+  type: http
+  seq: 6
+
+http:
+  method: PATCH
+  url: "{{BaseUrl}}/category/1"
+  body:
+    type: json
+    data: "{\r
+
+      \        \"name\": \"Updated Electronics\"\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"bad response code\", () => {\r
+
+        \    const badResponse = [401, 403, 404, 500];\r
+
+        \    expect(badResponse).to.include(res.getStatus());\r
+
+        })\r
+
+        \r
+
+        test(\"Cannot patch existing category\", ()=> {\r
+
+        \    expect(res.getBody().code).to.not.eql(200);\r
+
+        \    expect(res.getBody().message).to.eql(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

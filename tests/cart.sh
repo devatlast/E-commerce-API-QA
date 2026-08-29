@@ -1,7 +1,7 @@
 #!/bin/bash
 
 
-BASE_URL="http://localhost:3000"
+BASE_URL="https://e-commerce-api-qa.vercel.app"
 
 
 echo "Logging in as Admin"
@@ -16,33 +16,33 @@ fi
 sleep 2
 
 echo "logging in as user"
-USER_RESPONSE=$( curl -X POST $BASE_URL/login -H "Content-Type:application/json" -d '{"email":"updateditunu@email.com", "password": "Ilorin1"}')
+USER_RESPONSE=$( curl -X POST $BASE_URL/login -H "Content-Type:application/json" -d '{"email":"tolu@email.com", "password": "tolu1st"}')
 USER_TOKEN=$(echo "$USER_RESPONSE" | jq -r '.token')
 echo "$USER_TOKEN"
 
-if [ -z %USER_TOKEN ] || [ "$USER_TOKEN" = "null" ]; then 
+if [ -z $USER_TOKEN ] || [ "$USER_TOKEN" = "null" ]; then 
  echo "User login failed"
  exit 1
 fi
 
 sleep 2
 
-echo "Adding new item to user cart"
+echo "USER adding product to cart"
 curl -X POST "$BASE_URL/cart" -H "Authorization: Bearer $USER_TOKEN" -H "Content-Type:application/json" -d '{ "product_id":2, "quantity": 2}'
 sleep 2
 
-echo "Updating user cart items"
+echo "USER updating cart items"
 curl -X PUT "$BASE_URL/cart/2" -H "Authorization: Bearer $USER_TOKEN" -H "Content-Type:application/json" -d '{"quantity": 4}'
 sleep 2
 
 
-echo "Getting all carts - Admin "
+echo "ADMIN views all carts "
 curl -X GET "$BASE_URL/cart" -H "Authorization: Bearer $ADMIN_TOKEN"
 sleep 2
 
-echo "Getting cart items - User "
+echo "USER views cart items"
 curl -X GET "$BASE_URL/cart/me" -H "Authorization: Bearer $USER_TOKEN"
 sleep 2
 
-echo "Deleting Item from User cart"
+echo "USER remove product from cart"
 curl -X DELETE "$BASE_URL/cart/2" -H "Authorization: Bearer $USER_TOKEN"

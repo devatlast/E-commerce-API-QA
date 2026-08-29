@@ -1,0 +1,20 @@
+info:
+  name: Remove category
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{BaseUrl}}/category/{{category_to_work_with}}"
+  body:
+    type: text
+    data: ""
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

@@ -1,0 +1,34 @@
+info:
+  name: Get all categories
+  type: http
+  seq: 2
+
+http:
+  method: GET
+  url: "{{BaseUrl}}/category/all"
+  auth:
+    type: bearer
+    token: "{{Admin_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const categories = res.getBody();\r
+
+        test(\"all categories have equal features\", () => {\r
+
+        \    categories.forEach(category => {\r
+
+        \        expect(category).to.have.property(\"id\");\r
+
+        \        expect(category).to.have.property(\"name\");\r
+
+        \    })\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

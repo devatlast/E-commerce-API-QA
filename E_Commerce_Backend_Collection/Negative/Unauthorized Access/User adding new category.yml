@@ -1,0 +1,43 @@
+info:
+  name: User adding new category
+  type: http
+  seq: 5
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/category"
+  body:
+    type: json
+    data: "{\r
+
+      \    \"name\": \"furnitures\"\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"bad response code\", () => {\r
+
+        \    const badResponse = [401, 403, 404, 500];\r
+
+        \    expect(badResponse).to.include(res.getStatus());\r
+
+        })\r
+
+        \r
+
+        test(\"can't post new category\", ()=> {\r
+
+        \    expect(res.getBody().message).to.eql(\"Admin access required\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

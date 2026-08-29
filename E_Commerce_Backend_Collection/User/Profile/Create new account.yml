@@ -1,0 +1,36 @@
+info:
+  name: Create new account
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/users"
+  body:
+    type: json
+    data: "{\r
+
+      \    \"first_name\": \"micheal\",\r
+
+      \    \"last_name\": \"lalonpe\",\r
+
+      \    \"email\": \"lalonpe@email.com\",\r
+
+      \    \"password\": \"lalonbaby11\"\r
+
+      }"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"user created successfully\", () => {\r
+
+        \    expect(res.getBody().id).to.be.a('number')\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

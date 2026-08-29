@@ -1,0 +1,43 @@
+info:
+  name: Get profile details
+  type: http
+  seq: 3
+
+http:
+  method: GET
+  url: "{{BaseUrl}}/users/me"
+  body:
+    type: json
+    data: ""
+  auth:
+    type: bearer
+    token: "{{user_to_delete}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"password is not visible\", () => {\r
+
+        \    const json = res.getBody();\r
+
+        \    expect(json.password).to.be.undefined;\r
+
+        });\r
+
+        test(\"Response has necessary features\", () => {\r
+
+        \    const json = res.getBody();\r
+
+        \    expect(json.full_name).to.not.be.undefined;\r
+
+        \    expect(json.email).to.not.be.undefined;\r
+
+        \    expect(json.created_at).to.not.be.undefined;\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

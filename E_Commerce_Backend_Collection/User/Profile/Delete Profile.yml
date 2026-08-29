@@ -1,0 +1,37 @@
+info:
+  name: Delete Profile
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{BaseUrl}}/users/me"
+  body:
+    type: text
+    data: ""
+  auth:
+    type: bearer
+    token: "{{user_to_delete}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Profile deleted successfully\", () => {\r
+
+        \texpect(res.getStatus()).to.eql(200) \r
+
+        })\r
+
+        test(\"Got a response message\", () => {\r
+
+        \    let jsonData = res.getBody();\r
+
+        \    expect(jsonData.message).to.eql(\"Profile deleted\");\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

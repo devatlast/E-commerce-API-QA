@@ -1,0 +1,38 @@
+info:
+  name: User tries deleting orders
+  type: http
+  seq: 15
+
+http:
+  method: DELETE
+  url: "{{BaseUrl}}/orders/2"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        \r
+
+        test(\"Order can't be removed by non-admin\", () => {\r
+
+        \    expect(json.message).to.eql(\"Admin access required\")\r
+
+        })\r
+
+        test(\"this is a bad request\", () => {\r
+
+        \    const badResponse = [404, 402, 401, 500];\r
+
+        \    expect(badResponse).to.include(res.getStatus())\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

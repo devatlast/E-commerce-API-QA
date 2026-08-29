@@ -1,0 +1,42 @@
+info:
+  name: Delete product from cart
+  type: http
+  seq: 4
+
+http:
+  method: DELETE
+  url: "{{BaseUrl}}/cart/4"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"Product unavailable in cart\", () => {\r
+
+        \    expect(res.getBody().message).to.eql(\"Product not found in user cart\")\r
+
+        })\r
+
+        test(\"Product removed from cart\", () =>{\r
+
+        \    const goodResponse = 200;\r
+
+        \    const badResponse = [404, 500, 403];\r
+
+        \    const json = res.getBody();\r
+
+        \    if(json.statusCode === goodResponse){\r
+
+        \   expect(json.statusCode).to.not.be.oneOf(badResponse);\r
+
+        \    }\r
+
+        });"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

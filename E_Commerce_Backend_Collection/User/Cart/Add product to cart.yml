@@ -1,0 +1,55 @@
+info:
+  name: Add product to cart
+  type: http
+  seq: 1
+
+http:
+  method: POST
+  url: "{{BaseUrl}}/cart"
+  body:
+    type: json
+    data: "{\r
+
+      \    \"product_id\":4,\r
+
+      \    \"quantity\":2\r
+
+      }"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "const json = res.getBody();\r
+
+        if(json.id){\r
+
+        \tbru.setEnvVar(\"cart_id\", json.id);\r
+
+        }\r
+
+        \r
+
+        \r
+
+        test(\"Response time is less than 800ms\", function () {\r
+
+        \    expect(res.getResponseTime()).to.be.below(800);\r
+
+        });\r
+
+        \r
+
+        test(\"Successful POST request\", function () {\r
+
+        \    expect(res.getStatus()).to.be.oneOf([201, 202]);\r
+
+        });"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5

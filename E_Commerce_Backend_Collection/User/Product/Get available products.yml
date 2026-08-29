@@ -1,0 +1,34 @@
+info:
+  name: Get available products
+  type: http
+  seq: 1
+
+http:
+  method: GET
+  url: "{{BaseUrl}}/products"
+  auth:
+    type: bearer
+    token: "{{User_Token}}"
+
+runtime:
+  scripts:
+    - type: after-response
+      code: "test(\"product Id is not visible\", () => {\r
+
+        \    const json = res.getBody();\r
+
+        \    json.forEach((product) => {\r
+
+        \        expect(product).to.not.have.property(\"id\");\r
+
+        \        expect(product).to.not.have.property(\"category_id\")\r
+
+        \    })\r
+
+        })"
+
+settings:
+  encodeUrl: true
+  timeout: 0
+  followRedirects: true
+  maxRedirects: 5
