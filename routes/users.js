@@ -153,8 +153,8 @@ router.put('/:id', auth, isAdmin,  async(req, res) => {
 
     try{
         const result = await pool.query(
-            `update users set first_name = $1, last_name =$2, email = $3, role = $4, password = $5 where id = $6 RETURNING *`, 
-            [first_name, last_name, email, role,password, id]
+          `update users set first_name = coalesce($1, first_name), last_name = coalesce($2, last_name), email = coalesce($3, email), role = coalesce($4, role),password = coalesce($5, password) where id = $6 RETURNING *`, 
+            [first_name || null, last_name || null, email || null, role || null, password || null, id]
         );
         if(result.rows.length === 0){
             return res.status(404).json({
