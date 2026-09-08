@@ -31,6 +31,10 @@ router.put('/me', auth,  async(req, res) => {
     } = req.body;
 
     try{
+        if(req.body.role){
+            return res.status(400).json({error: 'Users cannot update their own role'});
+        }
+
         const result = await pool.query(
             `update users set first_name = coalesce($1, first_name), last_name = coalesce($2, last_name), email = coalesce($3, email), password = coalesce($4, password) where id = $5 RETURNING *`, 
             [first_name || null, last_name || null, email || null, password || null, id]
