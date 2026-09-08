@@ -122,7 +122,7 @@ router.post('/', async(req, res) => {
 
     try{
         const existingUser = await pool.query( `select * from users where email = $1`, [email]);
-        if(existingUser.rows.lemgth > 0){
+        if(existingUser.rows.length > 0){
             return res.status(400).json({ error: 'Email already registered'});
         }
 
