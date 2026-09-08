@@ -10,11 +10,14 @@ router.use(express.json());
 
 
 router.get('/', auth, isAdmin, async (req, res) => {
+    if(req.user.role !== 'admin'){
+        return res.status(403).json({error: 'Access denied'})
+    }
     try{
         const result = await pool.query(
             'select * from users'
         );
-        res.json(result.rows);
+        res.status(200).json(result.rows);
     }catch (err) {
         console.error(err);
         res.status(500).json({error: 'Database error'});
