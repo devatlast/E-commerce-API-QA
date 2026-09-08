@@ -32,8 +32,8 @@ router.put('/me', auth,  async(req, res) => {
 
     try{
         const result = await pool.query(
-            `update users set first_name = $1, last_name =$2, email = $3, password = $4 where id = $5 RETURNING *`, 
-            [first_name, last_name, email, password, id]
+            `update users set first_name = coalesce($1, first_name), last_name = coalesce($2, last_name), email = coalesce($3, email), password = coalesce($4, password) where id = $5 RETURNING *`, 
+            [first_name || null, last_name || null, email || null, password || null, id]
         );
         if(result.rows.length === 0){
             return res.status(404).json({
@@ -121,6 +121,11 @@ router.post('/', async(req, res) => {
     } = req.body;
 
     try{
+        const existingUser = await pool.query( `select * from users where email = $1`, [email]);
+        if(existingUser.rows.lemgth > 0){
+            return res.status(400).json({ error: 'Email already registered'});
+        }
+
         const result = await pool.query(
             `insert into users (first_name, last_name, email, password) values($1, $2, $3, $4) returning *`,
             [first_name, last_name, email, password]
