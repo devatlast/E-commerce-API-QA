@@ -86,7 +86,7 @@ router.delete('/me', auth,  async(req, res) => {
                 message: 'User not found'
             });    
         }
-        res.status(204).res.json({
+        res.status(204).json({
                 message: 'Profile deleted'
             });    
     } catch (err){
