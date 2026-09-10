@@ -65,7 +65,7 @@ router.get('/me', auth,  async(req,res )=>{
                 message: 'User not found!'
             });
         }
-        res.status(200).res.json(result.rows[0]);
+        res.status(200).json(result.rows[0]);
     } catch (err){
         console.error(err);
         res.status(500).json({error: 'Database Error'});
@@ -108,7 +108,7 @@ router.delete('/:id', auth, isAdmin, async(req, res) => {
                 message: 'User not found'
             });
         }
-        res.status(204).res.json({ message: 'User deleted'});
+        res.status(204).json({ message: 'User deleted'});
     } catch (err){
         console.error(err);
         res.status(500).json({error: 'Database error'})
