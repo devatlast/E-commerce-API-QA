@@ -13,7 +13,7 @@ router.get('/', auth, async (req, res) => {
         const result = await pool.query(
             'select p.name as product_name, p.price, p.description, c.name as category from products p inner join categories c on p.category_id = c.id'
         );
-        res.json(result.rows);
+        res.status(200).json(result.rows);
     } catch (err){
         console.error(err);
         res.status(500).json({Error: 'Database error'})
@@ -26,7 +26,7 @@ router.get('/all', auth, isAdmin, async (req, res) => {
         const result = await pool.query(
             'select * from products'
         );
-        res.json(result.rows);
+        res.status(200).json(result.rows);
     } catch (err){
         console.error(err);
         res.status(500).json({Error: 'Database error'})
@@ -39,7 +39,7 @@ router.get('/:id', auth, async (req, res) => {
         const result = await pool.query(
              'select p.name as product_name, p.price, p.description, c.name as category from products p inner join categories c on p.category_id = c.id where p.id = $1', [id]
         );
-        res.json(result.rows);
+        res.status(200).json(result.rows);
     } catch(err) {
         console.error(err);
         res.status(500).json({Error: 'Database error'})
@@ -84,7 +84,7 @@ router.put('/:id', auth, isAdmin, async(req, res)=>{
         if(result.rows.length === 0){
             return res.status(404).json({Message: 'Product not found'})
         }
-        res.status(201).json(result.rows);
+        res.status(200).json(result.rows);
     } catch(err){
         console.error(err);
         res.status(500).json({Error: 'Database error'})
@@ -102,7 +102,7 @@ router.delete('/:id', auth, isAdmin,  async(req, res)=> {
                 Message: "Product not found"
             })
         }
-        res.json({Success: 'Product removed from list'});
+        res.status(204).json({Success: 'Product removed from list'});
     } catch (err){
         console.error(err);
         res.status(500).json({Error: "Database error"})
