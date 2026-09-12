@@ -16,7 +16,6 @@ The API was developed as a backend portfolio project with a focus on REST API de
 * Order creation and management
 * Automatic cart clearing after order creation
 * PostgreSQL relational database
-* Password hashing
 * Protected API routes
 * Unauthorized-access handling
 * API testing with Postman and Bruno
