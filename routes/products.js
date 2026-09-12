@@ -77,8 +77,8 @@ router.put('/:id', auth, isAdmin, async(req, res)=>{
     } = req.body;
     try{
         const result = await pool.query(
-            'update products set category_id = $1, name = $2, description = $3, price = $4, stock = $5 where id = $6 returning *',[
-                category_id, name, description,price, stock, id
+            'update products set category_id = coalesce($1, category_id), name = coalesce($2, name), description = coalesce($3, description), price = coalesce($4, price), stock = coalesce($5, stock) where id = $6 returning *',[
+                category_id || null, name || null, description || null,price || null, stock || null, id
             ]
         );
         if(result.rows.length === 0){
