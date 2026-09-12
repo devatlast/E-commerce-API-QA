@@ -11,7 +11,7 @@ router.use(express.json());
 router.get('/', auth, async (req, res) => {
     try{
         const result = await pool.query(
-            'select p.name as product_name, p.price, p.description, c.name as category from products p inner join categories c on p.category_id = c.id'
+            'select p.name as product_name, p.price, p.description, c.name as category, stock from products p inner join categories c on p.category_id = c.id'
         );
         res.status(200).json(result.rows);
     } catch (err){
@@ -37,7 +37,7 @@ router.get('/:id', auth, async (req, res) => {
     const id = req.params.id;
     try{
         const result = await pool.query(
-             'select p.name as product_name, p.price, p.description, c.name as category from products p inner join categories c on p.category_id = c.id where p.id = $1', [id]
+             'select p.name as product_name, p.price, p.description, c.name as category, stock from products p inner join categories c on p.category_id = c.id where p.id = $1', [id]
         );
         res.status(200).json(result.rows);
     } catch(err) {
