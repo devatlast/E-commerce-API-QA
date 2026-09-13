@@ -13,7 +13,7 @@ router.get('/all', auth, isAdmin, async(req, res) => {
         const result = await pool.query(
             'select * from categories'
         );
-        res.json(result.rows);
+        res.status(200).json(result.rows);
     } catch(err){
         console.error(err);
         res.status(500).json({
@@ -27,7 +27,7 @@ router.get('/me', auth, async (req, res) => {
         const result = await pool.query(
             ' select name from categories'
         );
-        res.json(result.rows);
+        res.status(200).json(result.rows);
     }catch (err){
         console.error(err);
         res.status(500).json({
@@ -58,7 +58,7 @@ router.patch('/:id', auth, isAdmin, async(req, res) => {
         const result = await pool.query(
             ' update categories set name = $1 where id = $2 returning *', [name, id]
         );
-        res.status(201).json(result.rows[0]);
+        res.status(200).json(result.rows[0]);
     } catch(err){
         console.error(err);
         res.status(500).json({
@@ -78,7 +78,7 @@ router.delete('/:id', auth, isAdmin, async(req, res) => {
                 message: 'Category not found'
             })
         }
-        res.status(200).json({
+        res.status(204).json({
             message: 'Success: category removed from list'
         })
     } catch(err){
