@@ -15,7 +15,7 @@ router.get('/', auth, isAdmin, async(req, res) => {
         const result = await pool.query(
             ' select * from orders'
         );
-        res.json(result.rows)
+        res.status(200).json(result.rows)
     } catch(err){
         console.error(err);
         res.status(500).json({ Error: 'Database error'})
@@ -149,7 +149,7 @@ router.delete('/:id', auth, isAdmin, async(req, res) =>{
             message: 'Order not found'
         });
     }
-    res.status(200).json({
+    res.status(204).json({
         message: 'Order deleted successfully'
     });
 } catch(err){
