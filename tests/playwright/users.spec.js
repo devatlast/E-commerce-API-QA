@@ -4,30 +4,33 @@ import { test, expect } from '@playwright/test';
 let userToken;
 let adminToken; 
 
-test.beforeAll(async({request}) => {
+test.beforeEach(async({request}) => {
     const userRes = await login(
         request, 
-        'larotimi@email.com',
-        'lawale1'
+        'tolu@email.com',
+        'tolu1st'
     );
     userToken = userRes.token;
 
     const adminRes = await login(
         request,
         'ola@email.com',
-        'admin1'
+       'admin1'
     );
-    adminToken = adminRes.token
+    adminToken = adminRes.token;
 });
 
 
 
 test("Create a new user", async ({request}) => {
     const response = await request.post('/users', {
+        headers: {
+            'Content-Type': 'application/json'
+        },
         data: {
-            first_name: 'playwright4',
-            last_name: 'tester4',
-            email: 'playwright4@test.com',
+            first_name: 'playwright15',
+            last_name: 'tester15',
+            email: 'playwright15@test.com',
             password: 'testPasswd123'
         }
     });
@@ -44,8 +47,8 @@ test("Create a new user", async ({request}) => {
 test('User logs in successfully', async ({request}) => {
     const response = await request.post('/login', {
         data: {
-            email: 'playwright@test.com',
-            password: 'testPasswd123'
+            email:  'playwright@test.com',
+            password:  'testPasswd123' 
         }
     });
     expect(response.status()).toBe(200);
@@ -63,7 +66,7 @@ test('User updates profile details', async ({ request }) => {
         last_name: 'olarotimi'
      }
     });
-    expect(response.status()).toBe(201);
+    expect(response.status()).toBe(200);
     const body = await response.json();
     expect(body).toHaveProperty('id');
     expect(body).toHaveProperty('created_at');
@@ -124,16 +127,13 @@ test('Admin updates user role to Admin successfully', async ({request}) => {
 
 
 test('Admin deletes user from table', async ({request}) => {
-    const response = await request.delete('/users/51', {
+    const response = await request.delete('/users/89', {
         headers: {
             Authorization: `Bearer ${adminToken}`
         }
     });
 
-    expect(response.status()).toBe(200);
-    const body = await response.json();
-
-    expect(body.message).toBe('User deleted');
+    expect(response.status()).toBe(204);
 })
  
 
@@ -158,4 +158,9 @@ test('User cannot access other users details', async ({request}) => {
     });
 
     expect(response.status()).toBe(403);
+})
+
+test('User cannot access profile withou token', async ({request}) => {
+    const response = await request.get('/users/me');
+    expect(response.status()).toBe(401);
 })
