@@ -7,7 +7,7 @@ echo "------WAITING------"
 sleep 5
 
 echo "-----Running categories tests-------"
-./category.sh
+./categories.sh
 echo "------categories test run successfully-------" 
 echo "------WAITING------"
 sleep 5

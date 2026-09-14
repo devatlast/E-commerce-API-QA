@@ -17,3 +17,15 @@ jobs:
       - name: Run E_commerce-backend
         run: |
          postman collection run "54348994-8aeef608-9464-4b4b-8386-c0a33f974f45" -e "54348994-e9fcb8d3-63b8-4a86-a767-3928aa06821d" --env-var "BaseUrl=https://e-commerce-api-qa.vercel.app" --delay-request 100
+      - name: Install dependencies
+        run: npm ci
+      - name: Install playwright browser & dependecies
+        run: npx playwright install --with-deps
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Run Curl Shell tests
+        run: | 
+              chmod +x tests/curlTests/*.sh
+              ./tests/curlTests/allRoutes.sh
+      - name: Run playwright tests
+        run: npx plawright test

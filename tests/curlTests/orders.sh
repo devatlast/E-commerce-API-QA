@@ -34,7 +34,7 @@ sleep 1
 echo "--creating user order-"
 RESPONSE=$(curl  -X POST "$BASE_URL/orders" -H "Authorization: Bearer $USER_TOKEN" )
 echo "$RESPONSE"
-ORDER_ID=$(echo "$RESPONSE" | jq -r '.id')
+ORDER_ID=$(echo "$RESPONSE" | jq -r '.order.id')
 echo "User orderID is: $ORDER_ID"
 sleep 2
 
