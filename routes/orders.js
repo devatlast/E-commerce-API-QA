@@ -88,18 +88,18 @@ router.post('/', auth,async(req, res)=>{
         }
 
         const order = await pool.query(
-            ' insert into orders(user_id, total) values ($1, $2) returning *', [user_id, total]
+            ' insert into public.orders(user_id, total) values ($1, $2) returning *', [user_id, total]
         );
 
         const orderId = order.rows[0].id;
         for(const item of cart.rows){
             await pool.query(
-            `insert into order_items(order_id, product_id, price) values($1, $2, $3) returning *`, 
+            `insert into public.order_items(order_id, product_id, price) values($1, $2, $3) returning *`, 
             [orderId, item.product_id, item.price]);
         };
 
         await pool.query(
-            `delete from cart_items where user_id = $1`, [user_id]
+            `delete from public.cart_items where user_id = $1`, [user_id]
         );
         res.status(201).json({
             message: 'Order created successfully',
