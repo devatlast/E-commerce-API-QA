@@ -54,13 +54,7 @@ e-commerce-api/
 │
 ├── tests/
 │   └── playwright/
-│       ├── admin/
-│       ├── user/
-│       └── unauthorized/
-│
-├── scripts/
-│   └── API testing scripts
-│
+│    [__ curlTests/
 ├── db.js
 ├── server.js
 ├── package.json
