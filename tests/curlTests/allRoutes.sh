@@ -1,31 +1,31 @@
 #!/bin/bash
 
 echo "--------Running users tests-------"
-./users.sh
+.tests/curlTests/users.sh
 echo "user tests run successfully------"
 echo "------WAITING------"
 sleep 5
 
 echo "-----Running categories tests-------"
-./categories.sh
+./tests/curlTests/categories.sh
 echo "------categories test run successfully-------" 
 echo "------WAITING------"
 sleep 5
 
 echo "-------Running products tests------"
-./products.sh
+.tests/curlTests/products.sh
 echo "-------products test run successfully----"
 echo "------WAITING------"
 sleep 5
 
 echo "-------Running cart tests-------"
-./cart.sh
+./tests/curlTests/cart.sh
 echo "------Cart tests performed successfully------"
 echo "------WAITING------"
 sleep 5
 
 echo "------Running orders tests------"
-./orders.sh
+./tests/curlTests/orders.sh
 echo "-------orders tests run successfully-----"
 sleep 5
 
