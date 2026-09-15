@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/chekout@v4
+        uses: actions/checkout@4.2.2
 
       - name: Install Postman CLI
         run: |
@@ -38,6 +38,6 @@ jobs:
         run: | 
               chmod +x tests/curlTests/*.sh
               ./tests/curlTests/allRoutes.sh
-              
+
       - name: Run playwright tests
         run: npx plawright test
