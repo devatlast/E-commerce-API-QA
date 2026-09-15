@@ -1,4 +1,4 @@
-E-Commerce Backend API
+E-Commerce Backend API --- https://e-commerce-api-qa.vercel.app
 
 A RESTful e-commerce backend API built with Node.js, Express.js, and PostgreSQL. The project provides user authentication, role-based authorization, product management, shopping cart functionality, and order processing.
 
@@ -317,8 +317,7 @@ The main goal of this project was to build a realistic backend application rathe
 The project combines authentication, authorization, relational database operations, business logic, API testing, and automated testing into one application.
 
 👨‍💻 Author
-
-Emmanuel
+Olawale Rotimi
 
 Backend/API Developer & QA-focused Developer
 
@@ -340,3 +339,18 @@ cURL
 📄 License
 
 This project is available for educational and portfolio purposes
+
+
+NOTE: For the plawright tests to run seamlessly with no errors, These request values should be changed:
+
+tests/playwright/carts.spec.js:23:5 › Admin views all users carts ──────────────────────────────
+    tests/playwright/carts.spec.js:40:5 › User views own cart ──────────────────────────────────────
+    tests/playwright/orders.spec.js:77:5 › User creates new order ──────────────────────────────────
+    tests/playwright/orders.spec.js:120:5 › Admin removes order from list ──────────────────────────
+    tests/playwright/products.spec.js:110:5 › Admin deletes product from list ──────────────────────
+    tests/playwright/users.spec.js:25:5 › Create a new user ────────────────────────────────────────
+    tests/playwright/users.spec.js:129:5 › Admin deletes user from table ───────────────────────────
+
+like: request.delete('/users/4);
+
+Also: Users 1 & 2 should not be deleted as User 1 has Admin priviledges and User 2 has all complete operations from profile to order
