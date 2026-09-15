@@ -13,7 +13,7 @@ echo "------WAITING------"
 sleep 5
 
 echo "-------Running products tests------"
-.tests/curlTests/products.sh
+./tests/curlTests/products.sh
 echo "-------products test run successfully----"
 echo "------WAITING------"
 sleep 5
