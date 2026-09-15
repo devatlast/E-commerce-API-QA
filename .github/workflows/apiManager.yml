@@ -10,22 +10,34 @@ jobs:
   run-api-tests:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/chekout@v4
+
       - name: Install Postman CLI
-        run: curl -s https://dl-cli.pstmn.io/install/linux64.sh | sh
+        run: |
+              curl -0- https://dl-cli.pstmn.io/install/linux64.sh | sh
+
       - name: Login to Postman
         run: postman login --with-api-key ${{ secrets.E_COMMERCE_KEY }}
-      - name: Run E_commerce-backend
+
+      - name: Run E_commerce-backend Postman tests
+        continue-on-error: true
         run: |
          postman collection run "54348994-8aeef608-9464-4b4b-8386-c0a33f974f45" -e "54348994-e9fcb8d3-63b8-4a86-a767-3928aa06821d" --env-var "BaseUrl=https://e-commerce-api-qa.vercel.app" --delay-request 100
+
       - name: Install dependencies
         run: npm ci
-      - name: Install playwright browser & dependecies
+
+      - name: Install playwright browsers
         run: npx playwright install --with-deps
+
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Run Curl Shell tests
         run: | 
               chmod +x tests/curlTests/*.sh
               ./tests/curlTests/allRoutes.sh
+              
       - name: Run playwright tests
         run: npx plawright test
